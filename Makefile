@@ -1,7 +1,10 @@
 TARGETS = changeCC
 
-all: $(TARGETS)
+all: $(TARGETS) change-map
 .PHONY: all
+
+run: bpf-load bpf-attach 
+	./changeCCMap
 
 $(TARGETS): %: %.bpf.o 
 
@@ -11,6 +14,9 @@ $(TARGETS): %: %.bpf.o
 		-I/usr/include/$(shell uname -m)-linux-gnu \
 		-g \
 	    -O2 -o $@ -c $<
+
+change-map: changeCCMap.c
+	gcc -Wall -o changeCCMap changeCCMap.c -L../libbpf/src -l:libbpf.a -lelf -lz
 
 bpf-load:
 	bpftool prog load changeCC.bpf.o /sys/fs/bpf/hello
@@ -26,4 +32,5 @@ bpf-trace:
 
 clean: 
 	- rm *.bpf.o
+	- rm changeCCMap
 	- rm /sys/fs/bpf/hello
