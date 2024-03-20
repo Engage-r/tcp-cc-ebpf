@@ -1,10 +1,12 @@
 TARGETS = changeCC
-
+CCString :=
 all: $(TARGETS) change-map
 .PHONY: all
 
-run: bpf-load bpf-attach 
-	./changeCCMap
+run-bpf: bpf-load bpf-attach 
+	
+run-user: 
+	./changeCCMap $(CCString)
 
 $(TARGETS): %: %.bpf.o 
 

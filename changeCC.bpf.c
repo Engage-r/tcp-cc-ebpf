@@ -27,7 +27,8 @@ int bpf_cong(struct bpf_sock_ops *skops)
     int rv = 0;
     int op;
     op = (int)skops->op;
-    long dport = (long)bpf_ntohl(skops->remote_port);
+    // long dport = (long)bpf_ntohl(skops->remote_port);
+    long ccKey = 1;
     char *ip_con_str;
 
 #ifdef DEBUG
@@ -43,7 +44,7 @@ int bpf_cong(struct bpf_sock_ops *skops)
         break;
     case BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB:
     case BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB:
-        ip_con_str = bpf_map_lookup_elem(&cong_map, &dport);
+        ip_con_str = bpf_map_lookup_elem(&cong_map, &ccKey);
         if (ip_con_str == NULL)
             return 1;
         rv = bpf_setsockopt(skops, SOL_TCP, TCP_CONGESTION,
