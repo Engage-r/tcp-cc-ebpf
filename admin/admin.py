@@ -33,11 +33,12 @@ def make_post_request(idx):
     except IndexError:
         print("Invalid entry index.")
         return
+    headers = {"Content-Type": "application/json"}
 
     url = f"http://{ip}:{port}"
     json_data = input("Enter JSON body for the POST request: ")
     try:
-        response = requests.post(url, data=json_data)
+        response = requests.post(url, data=json_data, headers=headers)
         print(f"POST request to {url} returned status code {response.status_code}")
     except requests.exceptions.RequestException as e:
         print(f"An error occurred: {e}")
