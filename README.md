@@ -10,8 +10,8 @@ This project requires the following tools to be built and run:
 - Ubuntu packages:
 
   - ```libbpf-dev``` (installable using ```sudo apt install libbpf-dev```)
-  - ```linux-tools-generic==6.5.0-26-generic``` (installable using ```sudo apt install linux-tools-generic==6.5.0-26-generic```)
-  - ```linux-cloud-tools==6.5.0-26-generic``` (installable using ```sudo apt install linux-cloud-tools==6.5.0-26-generic```)
+  - ```linux-tools==6.5.0-26-generic``` (installable using ```sudo apt install linux-tools-6.5.0-26-generic```)
+  - ```linux-cloud-tools==6.5.0-26-generic``` (installable using ```sudo apt install linux-cloud-tools-6.5.0-26-generic```)
  
 ## Building the project:
 
