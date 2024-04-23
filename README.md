@@ -29,3 +29,9 @@ sudo make bpf-trace
 1. Open your web browser and visit a website.
 2. Switch back to the terminal where the program is running. Analyze the captured trace data (from ```sudo make bpf-trace```) to see if the congestion control algorithm has changed.
 
+
+# Compiling C file:
+- sudo make change-map
+
+# Running C file:
+- sudo make run-user CCString="ccAlgo"

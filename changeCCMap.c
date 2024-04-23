@@ -3,18 +3,18 @@
 #include <errno.h>
 #include <bpf/bpf.h>
 
-int main()
+int main(int argc, char *argv[])
 {
-    char cong[5][9] = {"reno", "cubic", "illinois", "vegas", "westwood"};
-    char *pval = cong[0];
-    char *ipval = cong[1];
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s <string_value>\n", argv[0]);
+        return 1;
+    }
+    char *pval = argv[1];
     unsigned int cong_map_fd;
-
     cong_map_fd = bpf_obj_get("/sys/fs/bpf/cong_map");
-    int key1 = 443, key2 = 80;
+    int key = 1;
     // Update map elements
-    bpf_map_update_elem(cong_map_fd, &key1, pval, BPF_ANY);
-    bpf_map_update_elem(cong_map_fd, &key2, ipval, BPF_ANY);
-
+    bpf_map_update_elem(cong_map_fd, &key, pval, BPF_ANY);
     printf("Updated 'cong_map' and 'ip_cong_map' successfully\n");
 }
