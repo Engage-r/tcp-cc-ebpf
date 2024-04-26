@@ -2,7 +2,7 @@ package org.admin.backend.service.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.admin.enums.Priority;
+import org.admin.backend.enums.Priority;
 
 @Entity
 @Data

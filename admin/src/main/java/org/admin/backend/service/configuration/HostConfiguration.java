@@ -1,7 +1,7 @@
 package org.admin.backend.service.configuration;
 
-import org.admin.enums.Priority;
-import org.admin.enums.TCPCCAlgorithm;
+import org.admin.backend.enums.Priority;
+import org.admin.backend.enums.TCPCCAlgorithm;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
