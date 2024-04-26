@@ -1,14 +1,13 @@
 package org.admin.backend.service.dtos.request;
 
 import lombok.Data;
-
-import java.io.Serializable;
+import org.admin.enums.TCPCCAlgorithm;
 
 @Data
-public class HostThroughputRequest implements Serializable {
+public class HostTCPCCAlgorithmRequest {
   private String ip;
   private Long port;
-  private Double throughput;
+  private TCPCCAlgorithm tcpccAlgorithm;
 
   public String getHostURL() {
     return "http://" + ip + ":" + port;

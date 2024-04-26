@@ -6,6 +6,7 @@ import org.admin.backend.service.models.Host;
 import org.admin.backend.service.models.HostThroughput;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -17,8 +18,11 @@ public class HostThroughputRepository {
     return hostThroughputDao.save(hostThroughput);
   }
 
-
   public void saveAll(List<HostThroughput> hostThroughputs) {
     hostThroughputDao.saveAll(hostThroughputs);
+  }
+
+  public List<HostThroughput> findAverageThroughputOfActiveHostsAfterTime(LocalDateTime dateTime) {
+    return hostThroughputDao.findAverageThroughputOfActiveHostsAfterTime(dateTime);
   }
 }

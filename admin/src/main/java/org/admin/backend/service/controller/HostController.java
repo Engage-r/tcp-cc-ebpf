@@ -3,6 +3,7 @@ package org.admin.backend.service.controller;
 import lombok.RequiredArgsConstructor;
 import org.admin.backend.service.Services.HostService;
 import org.admin.backend.service.dtos.request.HostRequest;
+import org.admin.backend.service.dtos.request.HostTCPCCAlgorithmRequest;
 import org.admin.backend.service.dtos.response.HostResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,5 +28,16 @@ public class HostController {
   @PostMapping("/insert")
   public void insertNewHost(@RequestBody HostRequest hostRequest) {
     hostService.createNewHost(hostRequest);
+  }
+
+  @PostMapping("/autoSetCCAll")
+  public void autoSetTCPCCAlgorithmForAllActiveHosts() {
+    hostService.setTCPCCAlgorithmForAllActiveHosts();
+  }
+
+  @PostMapping("/setCC")
+  public void setTCPCCAlgorithmForHost(
+      @RequestBody HostTCPCCAlgorithmRequest hostTCPCCAlgorithmRequest) {
+    hostService.setTCPCCAlgorithmForHost(hostTCPCCAlgorithmRequest);
   }
 }

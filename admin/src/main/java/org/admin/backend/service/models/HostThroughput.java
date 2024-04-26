@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@IdClass(HostThroughput.ClientThroughputId.class)
-@Table(name = "client_throughput")
+@IdClass(HostThroughput.HostThroughputId.class)
+@Table(name = "host_throughput")
 public class HostThroughput {
   @Id @ManyToOne private Host host;
   @Id private LocalDateTime dateTime;
   private Double throughput;
 
-  public static class ClientThroughputId implements Serializable {
+  public static class HostThroughputId implements Serializable {
     @ManyToOne @Id private Host host;
     @Id private LocalDateTime dateTime;
   }

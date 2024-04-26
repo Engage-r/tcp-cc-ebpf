@@ -2,7 +2,7 @@ package org.admin.backend.service.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Generated;
+import org.admin.enums.Priority;
 
 @Entity
 @Data
@@ -13,8 +13,9 @@ public class Host {
   private Long id;
 
   private String ip;
-  private Integer port;
+  private Long port;
   private Boolean isActive;
+  private Priority priority;
 
   public String getHostURL() {
     return "http://" + ip + ":" + port;

@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class HostResponse {
   private String ip;
-  private Integer port;
+  private Long port;
   private Boolean isActive;
 }
