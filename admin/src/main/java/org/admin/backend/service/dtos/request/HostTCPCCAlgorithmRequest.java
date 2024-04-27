@@ -1,7 +1,7 @@
 package org.admin.backend.service.dtos.request;
 
 import lombok.Data;
-import org.admin.backend.enums.TCPCCAlgorithm;
+import org.admin.backend.service.enums.TCPCCAlgorithm;
 
 @Data
 public class HostTCPCCAlgorithmRequest {

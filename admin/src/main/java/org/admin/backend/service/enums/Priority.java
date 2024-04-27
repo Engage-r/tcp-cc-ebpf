@@ -1,4 +1,4 @@
-package org.admin.backend.enums;
+package org.admin.backend.service.enums;
 
 public enum Priority {
   LEVEL_0,
