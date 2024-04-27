@@ -7,4 +7,8 @@ import org.admin.backend.service.models.Host;
 public class MachineLimit {
   private Host host;
   private Double limit;
+  public MachineLimit(Host host, Double limit) {
+    this.host = host;
+    this.limit = limit;
+  }
 }
