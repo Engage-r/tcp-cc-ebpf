@@ -20,7 +20,7 @@ This project requires the following tools to be built and run:
 3. Run the following command to build the project:
 ```bash
 sudo make all
-sudo make run
+sudo make run-bpf
 sudo make bpf-trace
 ```
 
