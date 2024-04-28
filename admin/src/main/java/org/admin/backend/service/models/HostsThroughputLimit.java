@@ -18,5 +18,5 @@ public class HostsThroughputLimit {
   @Id private LocalDateTime dateTime;
 
   @JdbcTypeCode(SqlTypes.JSON)
-  List<HostThroughputRequest> hostsThroughputLimit;
+  List<HostThroughput> hostsThroughputLimit;
 }

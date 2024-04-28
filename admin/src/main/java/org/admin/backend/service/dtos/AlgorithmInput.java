@@ -4,8 +4,9 @@ import lombok.Data;
 import org.admin.backend.service.models.Host;
 
 @Data
-public class Machine {
+public class AlgorithmInput {
   private Host host;
   private Double currentThroughput;
   private Double requiredThroughput;
+  private Double throughputLimit;
 }

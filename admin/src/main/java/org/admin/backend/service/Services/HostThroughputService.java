@@ -3,11 +3,11 @@ package org.admin.backend.service.Services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.admin.backend.service.HTTPClient.HostHttpClient;
+import org.admin.backend.service.configuration.HostConfiguration;
 import org.admin.backend.service.dtos.request.HostThroughputRequest;
 import org.admin.backend.service.dtos.response.HostThroughputHttpResponse;
 import org.admin.backend.service.exceptions.HostThroughputNotFoundException;
 import org.admin.backend.service.exceptions.HostThroughputNotSetException;
-import org.admin.backend.service.exceptions.HostsThroughputLimitNotFoundException;
 import org.admin.backend.service.mappers.HostThroughputMapper;
 import org.admin.backend.service.models.Host;
 import org.admin.backend.service.models.HostThroughput;
@@ -30,6 +30,7 @@ public class HostThroughputService {
   private final HostThroughputMapper hostThroughputMapper;
   private final HostRepository hostRepository;
   private final HostsThroughputLimitRepository hostsThroughputLimitRepository;
+  private final HostConfiguration hostConfiguration;
 
   public void updateLatestThroughputOfAllHosts() {
     List<Host> activeHosts = hostRepository.findActiveHosts();
@@ -48,30 +49,31 @@ public class HostThroughputService {
     hostThroughputRepository.saveAll(activeHostsThroughput);
   }
 
-  public void setThroughputOfHost(HostThroughputRequest hostThroughputRequest)
+  public void setThroughputLimitOfHost(HostThroughputRequest hostThroughputLimitRequest)
       throws HostThroughputNotSetException {
     Host host =
         hostRepository.findByIpAndPort(
-            hostThroughputRequest.getIp(), hostThroughputRequest.getPort());
+            hostThroughputLimitRequest.getIp(), hostThroughputLimitRequest.getPort());
     if (host.getIsActive() == Boolean.FALSE) throw new HostThroughputNotSetException();
     try {
-      hostHttpClient.setHostThroughput(hostThroughputRequest);
+      hostHttpClient.setHostThroughput(hostThroughputLimitRequest);
     } catch (HostThroughputNotSetException e) {
       log.error("Couldn't set throughput for host:" + host);
       throw new HostThroughputNotSetException();
     }
   }
 
-  public void setThroughputOfHosts(List<HostThroughputRequest> hostThroughputRequests) {
+  public void setThroughputLimitOfHosts(List<HostThroughput> hostsThroughput) {
     try {
-      for (HostThroughputRequest hostThroughputRequest : hostThroughputRequests) {
-        setThroughputOfHost(hostThroughputRequest);
+      for (HostThroughput hostThroughput : hostsThroughput) {
+        setThroughputLimitOfHost(
+            hostThroughputMapper.mapToHostThroughputHttpRequest(hostThroughput));
       }
     } catch (HostThroughputNotSetException e) {
       log.error("cancelling further throughput limit requests!");
     }
     HostsThroughputLimit hostsThroughputLimit = new HostsThroughputLimit();
-    hostsThroughputLimit.setHostsThroughputLimit(hostThroughputRequests);
+    hostsThroughputLimit.setHostsThroughputLimit(hostsThroughput);
     hostsThroughputLimit.setDateTime(LocalDateTime.now());
     hostsThroughputLimitRepository.save(hostsThroughputLimit);
   }
@@ -85,5 +87,16 @@ public class HostThroughputService {
             latestHostsThroughputLimit.getDateTime());
     // TODO: check if all active hosts fetched or not
     return averageHostsThroughput;
+  }
+
+  public List<HostThroughput> getRequiredThroughputOfAllHosts() {
+    List<Host> hosts = hostRepository.findActiveHosts();
+    List<HostThroughput> hostsThroughput = new ArrayList<>();
+    for (Host host : hosts) {
+      HostThroughput hostThroughput =
+          hostThroughputMapper.mapHostAndThroughput(
+              host, hostConfiguration.getRequiredThroughput(host.getPriority()));
+    }
+    return hostsThroughput;
   }
 }

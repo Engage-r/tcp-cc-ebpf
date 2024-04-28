@@ -28,4 +28,11 @@ public class HostThroughputMapper {
     hostThroughputRequest.setThroughput(hostThroughputRequest.getThroughput());
     return hostThroughputRequest;
   }
+
+  public HostThroughput mapHostAndThroughput(Host host, Double throughput) {
+    HostThroughput hostThroughput = new HostThroughput();
+    hostThroughput.setHost(host);
+    hostThroughput.setThroughput(throughput);
+    return hostThroughput;
+  }
 }

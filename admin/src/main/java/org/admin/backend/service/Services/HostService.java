@@ -3,6 +3,7 @@ package org.admin.backend.service.Services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.admin.backend.service.HTTPClient.HostHttpClient;
+import org.admin.backend.service.configuration.HostConfiguration;
 import org.admin.backend.service.dtos.request.HostRequest;
 import org.admin.backend.service.dtos.request.HostTCPCCAlgorithmRequest;
 import org.admin.backend.service.dtos.response.HostResponse;
@@ -24,6 +25,7 @@ public class HostService {
   private final HostMapper hostMapper;
   private final HostHttpClient hostHttpClient;
   private final HostTCPCCAlgorithmMapper hostTCPCCAlgorithmMapper;
+  private final HostConfiguration hostConfiguration;
 
   public List<HostResponse> getAllHosts() {
     List<Host> hosts = hostRepository.findAllHosts();
@@ -59,7 +61,8 @@ public class HostService {
     List<Host> activeHosts = hostRepository.findActiveHosts();
     for (Host host : activeHosts) {
       HostTCPCCAlgorithmRequest hostTCPCCAlgorithmRequest =
-          hostTCPCCAlgorithmMapper.mapHostToHostTCPCCAlgorithmRequest(host);
+          hostTCPCCAlgorithmMapper.mapHostToHostTCPCCAlgorithmRequest(
+              host, hostConfiguration.getTCPCCAlgorithm(host.getPriority()));
       setTCPCCAlgorithmForHost(hostTCPCCAlgorithmRequest);
     }
   }
