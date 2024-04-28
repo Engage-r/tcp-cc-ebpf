@@ -8,12 +8,12 @@ app = Flask(__name__)
 PORT = 5000
 
 
-@app.route("/", methods=["POST"])
+@app.route("/cc", methods=["POST"])
 def handle_post():
   data = request.get_json()
 
-  if data and 'cc' in data:
-    cc_value = data['cc'].strip() 
+  if data and 'tcpccAlgorithm' in data:
+    cc_value = data['tcpccAlgorithm'].strip() 
 
     sanitized_cc_value = cc_value.replace(";", "\\;") 
 
@@ -29,7 +29,7 @@ def handle_post():
     except subprocess.CalledProcessError as e:
       message = f"Error running make commands: {e}"
   else:
-    message = "No data or 'cc' key not found in request."
+    message = "No data or 'tcpccAlgorithm' key not found in request."
 
   return jsonify({"message": message}), 200
 
