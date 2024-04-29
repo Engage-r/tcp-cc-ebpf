@@ -15,7 +15,9 @@ import org.admin.backend.service.models.HostsThroughputLimit;
 import org.admin.backend.service.repositories.HostRepository;
 import org.admin.backend.service.repositories.HostThroughputRepository;
 import org.admin.backend.service.repositories.HostsThroughputLimitRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class HostThroughputService {
   private final HostsThroughputLimitRepository hostsThroughputLimitRepository;
   private final HostConfiguration hostConfiguration;
 
+  @Scheduled(fixedDelay = 1000)
+  @Transactional
   public void updateLatestThroughputOfAllHosts() {
     List<Host> activeHosts = hostRepository.findActiveHosts();
     List<HostThroughput> activeHostsThroughput = new ArrayList<>();

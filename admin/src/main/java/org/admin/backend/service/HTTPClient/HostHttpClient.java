@@ -27,11 +27,10 @@ public class HostHttpClient {
   public HostThroughputHttpResponse getHostThroughput(Host host)
       throws HostThroughputNotFoundException {
     String url =
-        UriComponentsBuilder.fromHttpUrl(host.getHostURL()).path("/throughput").toUriString();
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-    return httpClient.request(
-        HttpMethod.GET, url, null, httpHeaders, HostThroughputHttpResponse.class);
+        UriComponentsBuilder.fromHttpUrl(host.getHostURL()).path("/getthroughput").toUriString();
+    //    HttpHeaders httpHeaders = new HttpHeaders();
+    //    httpHeaders.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+    return httpClient.request(HttpMethod.POST, url, null, null, HostThroughputHttpResponse.class);
   }
 
   @Recover

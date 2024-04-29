@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class AlgorithmService {
   private final AlgorithmA algorithmA;
   private final AlgorithmB algorithmB;
-  private Integer algorithmToRun;
+  private Integer algorithmToRun = 0;
 
   @Scheduled(fixedDelayString = "${algorithmFixedDelay.in.milliseconds}")
   public void runAlgorithmA() {

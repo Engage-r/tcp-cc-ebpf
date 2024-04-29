@@ -20,6 +20,7 @@ public class HostMapper {
     host.setIp(hostRequest.getIp());
     host.setPort(hostRequest.getPort());
     host.setIsActive(hostRequest.getIsActive());
+    host.setPriority(hostRequest.getPriority());
     return host;
   }
 }
