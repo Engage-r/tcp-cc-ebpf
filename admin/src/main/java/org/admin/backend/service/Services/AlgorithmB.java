@@ -1,7 +1,9 @@
 package org.admin.backend.service.Services;
 
 import lombok.RequiredArgsConstructor;
+import org.admin.backend.service.configuration.HostConfiguration;
 import org.admin.backend.service.dtos.AlgorithmInput;
+import org.admin.backend.service.enums.Priority;
 import org.admin.backend.service.mappers.HostThroughputMapper;
 import org.admin.backend.service.models.Host;
 import org.admin.backend.service.models.HostThroughput;
@@ -16,6 +18,7 @@ public class AlgorithmB {
   private final HostThroughputService hostThroughputService;
   private final HostThroughputMapper hostThroughputMapper;
   private final HostsThroughputLimitRepository hostsThroughputLimitRepository;
+  private final HostConfiguration hostConfiguration;
 
   public List<HostThroughput> findThroughputLimits(
       List<HostThroughput> hostsRequiredThroughput,
@@ -30,22 +33,28 @@ public class AlgorithmB {
     //    then increase x% limit for all
     // else do nothing
     // currTh<reqTh
-    // new limit=reqThr+(oldLimit-reqThr)/2 for all
+    // complex logic
     if (ifNetworkUnderutilized(algorithmInputs)) {
       newHostsThroughputLimit = increaseThroughputLimitOfAllHosts(algorithmInputs);
-    }
-    if (ifRequiredThroughputNotSatisfied(algorithmInputs)) {
-      newHostsThroughputLimit = decreaseThroughputLimitOfAllHosts(algorithmInputs);
+    } else if (ifRequiredThroughputNotSatisfied(algorithmInputs)) {
+      newHostsThroughputLimit = decreaseThroughputLimitOfHigherPriorityHosts(algorithmInputs);
     }
     return newHostsThroughputLimit;
   }
 
   private Boolean ifNetworkUnderutilized(List<AlgorithmInput> algorithmInputs) {
-    Double tolerance = 0.0000001;
     for (AlgorithmInput algorithmInput : algorithmInputs) {
-      if (Math.abs(algorithmInput.getCurrentThroughput() - algorithmInput.getThroughputLimit())
-          > tolerance) {
-        return Boolean.FALSE;
+      Double tolerance = algorithmInput.getThroughputLimit() * 0.1;
+      //      if (Math.abs(algorithmInput.getCurrentThroughput() -
+      // algorithmInput.getThroughputLimit())
+      //          > tolerance) {
+      //        return Boolean.FALSE;
+      //      }
+      if (algorithmInput.getCurrentThroughput() < algorithmInput.getThroughputLimit()) {
+        if ((algorithmInput.getThroughputLimit() - algorithmInput.getCurrentThroughput())
+            > tolerance) {
+          return Boolean.FALSE;
+        }
       }
     }
     return Boolean.TRUE;
@@ -53,26 +62,99 @@ public class AlgorithmB {
 
   private Boolean ifRequiredThroughputNotSatisfied(List<AlgorithmInput> algorithmInputs) {
     for (AlgorithmInput algorithmInput : algorithmInputs) {
+      Double tolerance = algorithmInput.getRequiredThroughput() * 0.1;
       if (algorithmInput.getCurrentThroughput() < algorithmInput.getRequiredThroughput()) {
-        return Boolean.TRUE;
+        if ((algorithmInput.getRequiredThroughput() - algorithmInput.getCurrentThroughput())
+            > tolerance) {
+          return Boolean.TRUE;
+        }
       }
     }
     return Boolean.FALSE;
   }
 
-  private List<HostThroughput> decreaseThroughputLimitOfAllHosts(
+  //  private List<HostThroughput> decreaseThroughputLimitOfAllHosts(
+  //      List<AlgorithmInput> algorithmInputs) {
+  //    Double decreaseFactor = 0.02;
+  //    List<HostThroughput> newHostsThroughputLimit = new ArrayList<>();
+  //    for (AlgorithmInput algorithmInput : algorithmInputs) {
+  //      Double excessThroughput =
+  //          algorithmInput.getThroughputLimit() - algorithmInput.getRequiredThroughput();
+  //      Double newThroughputLimit =
+  //          algorithmInput.getThroughputLimit() - decreaseFactor * excessThroughput;
+  //      newHostsThroughputLimit.add(
+  //          hostThroughputMapper.mapHostAndThroughput(algorithmInput.getHost(),
+  // newThroughputLimit));
+  //    }
+  //    return newHostsThroughputLimit;
+  //  }
+  private List<HostThroughput> decreaseThroughputLimitOfHigherPriorityHosts(
       List<AlgorithmInput> algorithmInputs) {
-    Double decreaseFactor = 0.02;
+    Double requiredThroughputSum = getRequiredThroughputSum(algorithmInputs);
+    // set limit for aggressive algo
+    Double newThroughputLimit =
+        doBinarySearch(
+            hostConfiguration.getRequiredThroughput(Priority.LEVEL_1),
+            hostConfiguration.getRequiredThroughput(Priority.LEVEL_0),
+            requiredThroughputSum,
+            algorithmInputs);
     List<HostThroughput> newHostsThroughputLimit = new ArrayList<>();
     for (AlgorithmInput algorithmInput : algorithmInputs) {
-      Double excessThroughput =
-          algorithmInput.getThroughputLimit() - algorithmInput.getRequiredThroughput();
-      Double newThroughputLimit =
-          algorithmInput.getThroughputLimit() - decreaseFactor * excessThroughput;
-      newHostsThroughputLimit.add(
-          hostThroughputMapper.mapHostAndThroughput(algorithmInput.getHost(), newThroughputLimit));
+      if (algorithmInput.getHost().getPriority() == Priority.LEVEL_0) {
+        newHostsThroughputLimit.add(
+            hostThroughputMapper.mapHostAndThroughput(
+                algorithmInput.getHost(), newThroughputLimit));
+      } else
+        newHostsThroughputLimit.add(
+            (hostThroughputMapper.mapHostAndThroughput(
+                algorithmInput.getHost(), algorithmInput.getThroughputLimit())));
     }
     return newHostsThroughputLimit;
+  }
+
+  private double doBinarySearch(
+      double lowest, double highest, double requiredValue, List<AlgorithmInput> algorithmInputs) {
+    double mid = 0.0;
+    double answer = lowest;
+    while (lowest <= highest) {
+      mid = (lowest + highest) / 2;
+      double extractedThroughput = 0.0;
+      for (AlgorithmInput algorithmInput : algorithmInputs) {
+        if (algorithmInput.getHost().getPriority() == Priority.LEVEL_0) {
+          Double upperTolerance = mid * 0.1;
+          if (algorithmInput.getCurrentThroughput() > mid) {
+            if ((algorithmInput.getCurrentThroughput() - mid) > upperTolerance) {
+              extractedThroughput += algorithmInput.getCurrentThroughput() - mid;
+            }
+          }
+        }
+      }
+      if (extractedThroughput >= requiredValue) {
+        answer = mid;
+        lowest = mid + 1;
+      } else highest = mid - 1;
+    }
+    return answer;
+  }
+
+  private Double getRequiredThroughputSum(List<AlgorithmInput> algorithmInputs) {
+    Double requiredThroughputSum = 0.0;
+    // TODO: handle case if currentThroughput of LEVEL_0 algo falls below LEVEL_1 required
+    // throughput
+    for (AlgorithmInput algorithmInput : algorithmInputs) {
+      if (algorithmInput.getHost().getPriority() == Priority.LEVEL_1) {
+        Double tolerance = algorithmInput.getRequiredThroughput() * 0.1;
+        if (algorithmInput.getCurrentThroughput() < algorithmInput.getRequiredThroughput()) {
+          if ((algorithmInput.getRequiredThroughput() - algorithmInput.getCurrentThroughput())
+              > tolerance) {
+            requiredThroughputSum +=
+                (algorithmInput.getRequiredThroughput() - algorithmInput.getCurrentThroughput())
+                    * 0.95;
+          }
+        }
+      }
+    }
+    return requiredThroughputSum;
   }
 
   private List<HostThroughput> increaseThroughputLimitOfAllHosts(

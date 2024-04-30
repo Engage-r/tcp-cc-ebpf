@@ -19,9 +19,6 @@ public class Host {
   private Boolean isActive;
   private Priority priority;
 
-  public String getHostURL() {
-    return "http://" + ip + ":" + port;
-  }
 
   @Override
   public boolean equals(Object o) {

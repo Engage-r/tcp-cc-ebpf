@@ -34,7 +34,7 @@ public class HostThroughputService {
   private final HostsThroughputLimitRepository hostsThroughputLimitRepository;
   private final HostConfiguration hostConfiguration;
 
-  @Scheduled(fixedDelay = 1000)
+  @Scheduled(fixedDelayString = "${updateThroughputFixedDelay.in.milliseconds}")
   @Transactional
   public void updateLatestThroughputOfAllHosts() {
     List<Host> activeHosts = hostRepository.findActiveHosts();
@@ -67,7 +67,9 @@ public class HostThroughputService {
     }
   }
 
+  @Transactional
   public void setThroughputLimitOfHosts(List<HostThroughput> hostsThroughput) {
+    if (hostsThroughput.isEmpty()) return;
     try {
       for (HostThroughput hostThroughput : hostsThroughput) {
         setThroughputLimitOfHost(
@@ -100,6 +102,7 @@ public class HostThroughputService {
       HostThroughput hostThroughput =
           hostThroughputMapper.mapHostAndThroughput(
               host, hostConfiguration.getRequiredThroughput(host.getPriority()));
+      hostsThroughput.add(hostThroughput);
     }
     return hostsThroughput;
   }

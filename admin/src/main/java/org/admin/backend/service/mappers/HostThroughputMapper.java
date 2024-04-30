@@ -23,9 +23,9 @@ public class HostThroughputMapper {
 
   public HostThroughputRequest mapToHostThroughputHttpRequest(HostThroughput hostThroughput) {
     HostThroughputRequest hostThroughputRequest = new HostThroughputRequest();
-    hostThroughputRequest.setIp(hostThroughputRequest.getIp());
-    hostThroughputRequest.setPort(hostThroughputRequest.getPort());
-    hostThroughputRequest.setThroughput(hostThroughputRequest.getThroughput());
+    hostThroughputRequest.setIp(hostThroughput.getHost().getIp());
+    hostThroughputRequest.setPort(hostThroughput.getHost().getPort());
+    hostThroughputRequest.setThroughput(hostThroughput.getThroughput());
     return hostThroughputRequest;
   }
 
