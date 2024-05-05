@@ -32,4 +32,7 @@ public class HostRepository {
   public Host findByIpAndPort(String ip, Long port) {
     return hostDao.findByIpAndPort(ip, port).orElseThrow(HostNotFoundException::new);
   }
+  public Host findById(Long Id){
+    return hostDao.findById(Id).orElseThrow(HostNotFoundException::new);
+  }
 }

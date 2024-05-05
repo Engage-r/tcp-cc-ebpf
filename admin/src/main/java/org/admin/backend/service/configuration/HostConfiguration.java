@@ -10,9 +10,8 @@ public class HostConfiguration {
   public Double getRequiredThroughput(Priority priority) {
     Double requiredThroughput = 0.0;
     switch (priority) {
-      case LEVEL_0 -> requiredThroughput = 1000.0;
-      case LEVEL_1 -> requiredThroughput = 800.0;
-      case LEVEL_2 -> requiredThroughput = 500.0;
+      case LEVEL_0 -> requiredThroughput = 15000.0;
+      case LEVEL_1 -> requiredThroughput = 5000.0;
     }
     return requiredThroughput;
   }

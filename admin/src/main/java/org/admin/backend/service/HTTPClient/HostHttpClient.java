@@ -9,9 +9,7 @@ import org.admin.backend.service.exceptions.HostTCPCCAlgorithmNotSetException;
 import org.admin.backend.service.exceptions.HostThroughputNotFoundException;
 import org.admin.backend.service.exceptions.HostThroughputNotSetException;
 import org.admin.backend.service.models.Host;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -26,12 +24,9 @@ public class HostHttpClient {
   @Retryable(maxAttempts = 2)
   public HostThroughputHttpResponse getHostThroughput(Host host)
       throws HostThroughputNotFoundException {
-    String url =
-        UriComponentsBuilder.fromHttpUrl(host.getHostURL()).path("/throughput").toUriString();
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-    return httpClient.request(
-        HttpMethod.GET, url, null, httpHeaders, HostThroughputHttpResponse.class);
+    String hostURL = "http://" + host.getIp() + ":" + host.getPort();
+    String url = UriComponentsBuilder.fromHttpUrl(hostURL).path("/getthroughput").toUriString();
+    return httpClient.request(HttpMethod.POST, url, null, null, HostThroughputHttpResponse.class);
   }
 
   @Recover

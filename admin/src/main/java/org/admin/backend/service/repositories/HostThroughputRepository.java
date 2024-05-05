@@ -7,6 +7,7 @@ import org.admin.backend.service.models.HostThroughput;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -23,6 +24,18 @@ public class HostThroughputRepository {
   }
 
   public List<HostThroughput> findAverageThroughputOfActiveHostsAfterTime(LocalDateTime dateTime) {
-    return hostThroughputDao.findAverageThroughputOfActiveHostsAfterTime(dateTime);
+    LocalDateTime dateTimeTOConsider = dateTime;
+    if (dateTime.isBefore(LocalDateTime.now().minusSeconds(5)))
+      dateTimeTOConsider = LocalDateTime.now().minusSeconds(5);
+    List<Object[]> hostThroughputDTOS =
+        hostThroughputDao.findAverageThroughputOfActiveHostsAfterTime(dateTimeTOConsider);
+    List<HostThroughput> hostsThroughput = new ArrayList<>();
+    for (Object[] hostThroughputDTO : hostThroughputDTOS) {
+      HostThroughput hostThroughput = new HostThroughput();
+      hostThroughput.setHost((Host) hostThroughputDTO[0]);
+      hostThroughput.setThroughput((Double) hostThroughputDTO[1]);
+      hostsThroughput.add(hostThroughput);
+    }
+    return hostsThroughput;
   }
 }

@@ -12,12 +12,12 @@ public class HostThroughputController {
   private final HostThroughputService hostThroughputService;
 
   @PutMapping("/updateAll")
-  public void updateThroughputsOfAllHosts() {
+  public void updateThroughputOfAllHosts() {
     hostThroughputService.updateLatestThroughputOfAllHosts();
   }
 
   @PostMapping("/set")
   public void setThroughputOfHost(@RequestBody HostThroughputRequest hostThroughputRequest) {
-    hostThroughputService.setThroughputOfHost(hostThroughputRequest);
+    hostThroughputService.setThroughputLimitOfHost(hostThroughputRequest);
   }
 }
